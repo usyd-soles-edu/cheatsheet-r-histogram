@@ -18,13 +18,22 @@ This work was developed using resources that are available under a [Creative Com
 
 -----
 
+::: {.content-visible unless-format="pdf"}
 ::: {layout-ncol=3}
 ![](assets/histo_p1.svg)
 
 ![](assets/histo_p3.svg)
 
 ![](assets/histo_p4.svg)
+:::
+:::
 
+::: {.content-visible when-format="pdf"}
+![](assets/histo_p1.png)
+
+![](assets/histo_p3.png)
+
+![](assets/histo_p4.png)
 :::
 
 ## About
@@ -105,6 +114,7 @@ ggplot(possums, aes(x = BW)) + # <2>
 ```{r}
 #| include: false
 ggsave("assets/histo_p1.svg")
+ggsave("assets/histo_p1.png")
 ```
 
 ## Version 2
@@ -126,6 +136,7 @@ ggplot(possums, aes(x = BW)) +
 ```{r}
 #| include: false
 ggsave("assets/histo_p2.svg")
+ggsave("assets/histo_p2.png")
 ```
 ## Version 3
 Plot both a histogram and a density plot at the same time.
@@ -148,6 +159,7 @@ p3
 ```{r}
 #| include: false
 ggsave("assets/histo_p3.svg")
+ggsave("assets/histo_p3.png")
 ```
 
 
@@ -172,6 +184,8 @@ ggplot(possums, aes(x = AactiveTBLUP)) +
 ```{r}
 #| include: false
 ggsave("assets/histo_p4.svg")
+ggsave("assets/histo_p4.png")
+
 ```
 :::
 
