@@ -1,0 +1,166 @@
+---
+title: Boxplots in **Jamovi** with `ggplot2`
+subtitle: Cheatsheet
+date: today
+lightbox: true
+---
+
+```{r}
+#| include: false
+library(dplyr)
+library(tidyr)
+library(gt)
+possums <- readxl::read_excel("possum_bw.xlsx")
+```
+::: {.callout-note appearance="simple"}
+This work was developed using resources that are available under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/), made available on the [SOLES Open Educational Resources](https://github.com/usyd-soles-edu) repository by the School of Life and Environmental Sciences, The University of Sydney.
+:::
+
+-----
+
+## About
+The histogram is a bar plot that shows the frequency of (often) continuous values in a dataset. It helps identify patterns, outliers, and the shape of the distribution (skewness, kurtosis). 
+
+::: {.callout-note collapse="true"}
+## Assumed knowledge
+- You know how to install and load packages in R.
+- You know how to import data into R.
+- You recognise data frames and vectors.
+:::
+
+::: {.callout-important collapse="true"}
+## Data structure
+The data should be in a **long format** (also known as tidy data), where each row is an observation and each column is a variable (@fig-format). If your data is not already structured this way, reshape it manually in a spreadsheet program or in R using the `pivot_longer()` function from the `tidyr` package.
+
+
+::: {layout="[ 0.4, -0.1, 0.4 ]" #fig-format}
+
+:::: {#first-column}
+```{r}
+#| echo: false
+possums <- readxl::read_excel("possum_bw.xlsx")
+possums |>
+  head(8) |>
+  gt() |>
+  opt_stylize(style = 5, color = "red")
+```
+:::
+
+::: {#second-column}
+```{r}
+#| echo: false
+possums |>
+  group_by(Sex) |>
+  mutate(row = row_number()) |>
+  pivot_wider(names_from = Sex, values_from = BW) |>
+  select(-row) |>
+  head(4) |>
+  gt() |>
+  opt_stylize(style = 5, color = "red")
+```
+:::
+
+Data should be in long format (left) where each row is an observation and each column is a variable. This is the preferred format for most statistical software. Wide format (right) is also common, but may require additional steps to analyse or visualise in some instances.
+::::
+:::
+
+## Data
+For this cheatsheet we will use the entire possums dataset used in [BIOL2022](https://www.sydney.edu.au/units/BIOL2022) labs.
+
+{{< downloadthis possums.xlsx dname="possum" label="Download the possums data" type="primary" >}}
+
+## Import data
+
+```{r}
+library(readxl)
+possums <- read_excel("possums.xlsx", sheet = 2)
+```
+
+
+## Plot
+
+Use the different plots below to explore the use of histograms in R. Note that histograms only need one variable to be plotted, therefore we pick any one of the several continuous variables in the dataset in the `aes()` function.
+
+::: panel-tabset
+## Version 1
+There bare minimum code to create a histogram in R.
+```{r}
+library(ggplot2) # <1>
+ggplot(possums, aes(x = BW)) + # <2>
+  geom_histogram() # <3>
+```
+1. Load the `ggplot2` package with `library(ggplot2)`.
+2. Create a canvas using `ggplot()` and specify the variable to be plotted on the x-axis with `aes(x = BW)`.
+3. Add a histogram layer using `geom_histogram()`.
+
+## Version 2
+Add colours, labels, adjust bin width, and change the theme.
+```{r}
+library(ggplot2)
+ggplot(possums, aes(x = BW)) +
+  geom_histogram(fill = "skyblue", color = "black", # <1>
+                 binwidth = .3) + # <2>
+  labs(x = "Body weight (g)", # <3>
+       y = "Frequency") +
+  theme_minimal() # <4>
+```
+1. Use `colour` and `fill` arguments to change bar colors.
+2. Adjust bin width with `binwidth` to control the detail of the histogram. A smaller value will increase the number of bars based on the range of the data.
+3. Add axis labels using `labs()`.
+4. Use `theme_minimal()` for a standardized appearance.
+
+
+## Version 3
+Plot both a histogram and a density plot at the same time.
+```{r}
+library(ggplot2)
+p3 <- ggplot(possums, aes(x = AactiveTBLUP, 
+                    y = after_stat(density))) +
+  geom_histogram(
+    fill = "skyblue", 
+    color = "black", 
+    position = "identity",
+    binwidth = 0.3) +
+  geom_density(position = "identity", fill = "red", alpha = 0.5) +
+  theme_bw()
+
+
+p3
+```
+
+
+## Version 4
+Compare a histogram with a standardised normal distribution.
+
+```{r}
+library(ggplot2)
+ggplot(possums, aes(x = AactiveTBLUP)) +
+  geom_histogram(aes(y = after_stat(density)), 
+                 fill = "skyblue", 
+                 color = "black", 
+                 binwidth = 0.3) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(possums$AactiveTBLUP), 
+                            sd = sd(possums$AactiveTBLUP)), 
+                color = "red", linewidth = 1) +
+  theme_minimal()
+```
+
+
+:::
+
+## Export
+
+Use the `ggsave()` function to save the plot as an image file. 
+
+- The `filename` argument specifies the name of the file.
+- The `plot` argument specifies the plot to be saved. In this case, the plot is stored in the object `p3` (from Version 3).
+- The `width` and `height` arguments specify the dimensions of the plot in inches.
+
+```{r}
+#| message: true
+#| eval: false
+ggsave(filename = "histogram.pdf", plot = p3, width = 7, height = 5)
+```
+
+The plot will be saved in the working directory, unless you specify a different path in the `filename` argument.
