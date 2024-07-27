@@ -1,5 +1,5 @@
 ---
-title: Boxplots in **Jamovi** with `ggplot2`
+title: Histograms in **R** with `ggplot2`
 subtitle: Cheatsheet
 date: today
 lightbox: true
@@ -17,6 +17,15 @@ This work was developed using resources that are available under a [Creative Com
 :::
 
 -----
+
+::: {layout-ncol=3}
+![](assets/histo_p1.svg)
+
+![](assets/histo_p3.svg)
+
+![](assets/histo_p4.svg)
+
+:::
 
 ## About
 The histogram is a bar plot that shows the frequency of (often) continuous values in a dataset. It helps identify patterns, outliers, and the shape of the distribution (skewness, kurtosis). 
@@ -93,6 +102,11 @@ ggplot(possums, aes(x = BW)) + # <2>
 2. Create a canvas using `ggplot()` and specify the variable to be plotted on the x-axis with `aes(x = BW)`.
 3. Add a histogram layer using `geom_histogram()`.
 
+```{r}
+#| include: false
+ggsave("assets/histo_p1.svg")
+```
+
 ## Version 2
 Add colours, labels, adjust bin width, and change the theme.
 ```{r}
@@ -109,7 +123,10 @@ ggplot(possums, aes(x = BW)) +
 3. Add axis labels using `labs()`.
 4. Use `theme_minimal()` for a standardized appearance.
 
-
+```{r}
+#| include: false
+ggsave("assets/histo_p2.svg")
+```
 ## Version 3
 Plot both a histogram and a density plot at the same time.
 ```{r}
@@ -117,16 +134,22 @@ library(ggplot2)
 p3 <- ggplot(possums, aes(x = AactiveTBLUP, 
                     y = after_stat(density))) +
   geom_histogram(
-    fill = "skyblue", 
+    fill = "white", 
     color = "black", 
     position = "identity",
     binwidth = 0.3) +
   geom_density(position = "identity", fill = "red", alpha = 0.5) +
   theme_bw()
 
-
 p3
 ```
+
+
+```{r}
+#| include: false
+ggsave("assets/histo_p3.svg")
+```
+
 
 
 ## Version 4
@@ -146,7 +169,10 @@ ggplot(possums, aes(x = AactiveTBLUP)) +
   theme_minimal()
 ```
 
-
+```{r}
+#| include: false
+ggsave("assets/histo_p4.svg")
+```
 :::
 
 ## Export
@@ -164,3 +190,4 @@ ggsave(filename = "histogram.pdf", plot = p3, width = 7, height = 5)
 ```
 
 The plot will be saved in the working directory, unless you specify a different path in the `filename` argument.
+
